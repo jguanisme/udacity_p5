@@ -86,6 +86,8 @@ I decided to search random window positions at random scales all over the image 
 Ultimately I searched on two scales using YCrCb 3-channel HOG features plus spatially binned color and histograms of color in the feature vector, which provided a nice result.  Here are some example images:
 
 ![alt text][image4]
+
+the scales is 1.5 and 2.
 ---
 
 ### Video Implementation
@@ -120,7 +122,7 @@ Here's an example result showing the heatmap from a series of frames of video, t
 
 Here I'll talk about the approach I took, what techniques I used, what worked and why, where the pipeline might fail and how I might improve it if I were going to pursue this project further.  
 
-1, scaling the image between png and jpg, i use the opencv for reading jpg and plt for reading png
+1, scaling the image between png and jpg, i use the opencv for reading jpg and plt for reading png. another way is that i use the astype to change the image value and then scale it with 255
 
 2, applying threshold to the headmap, beacuse of the multi sliding window method used, so the heat map is very clearly
 
@@ -132,3 +134,10 @@ some internal image shown blow:
 ![alt text](.\output_images\histogram.png)
 ![alt text](.\output_images\slidewindow.png)
 ![alt text](.\output_images\carpositions.png)
+
+Some times the shadow of road and tree may be predict as a car, this is the fail position of the pipline
+1, using two sacles for car predict
+
+2, adding more threshold for heat and label
+
+those ways can provide more rate of predicting success  
