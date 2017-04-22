@@ -14,16 +14,6 @@ The goals / steps of this project are the following:
 * Run your pipeline on a video stream (start with the test_video.mp4 and later implement on full project_video.mp4) and create a heat map of recurring detections frame by frame to reject outliers and follow detected vehicles.
 * Estimate a bounding box for vehicles detected.
 
-[//]: # (Image References)
-[image1]: ./examples/car_not_car.png
-[image2]: ./examples/HOG_example.jpg
-[image3]: ./examples/sliding_windows.jpg
-[image4]: ./examples/sliding_window.jpg
-[image5]: ./examples/bboxes_and_heat.png
-[image6]: ./examples/labels_map.png
-[image7]: ./examples/output_bboxes.png
-[video1]: ./project_video.mp4
-
 ## [Rubric](https://review.udacity.com/#!/rubrics/513/view) Points
 ###Here I will consider the rubric points individually and describe how I addressed each point in my implementation.  
 
@@ -42,14 +32,15 @@ The code for this step is contained in the first code cell of the IPython notebo
 
 I started by reading in all the `vehicle` and `non-vehicle` images.  Here is an example of one of each of the `vehicle` and `non-vehicle` classes:
 
-![alt text][image1]
+noncar:![alt text](.\output_images\noncar.png)
+car:![alt text](.\output_images\car.png)
 
 I then explored different color spaces and different `skimage.hog()` parameters (`orientations`, `pixels_per_cell`, and `cells_per_block`).  I grabbed random images from each of the two classes and displayed them to get a feel for what the `skimage.hog()` output looks like.
 
-Here is an example using the `YCrCb` color space and HOG parameters of `orientations=8`, `pixels_per_cell=(8, 8)` and `cells_per_block=(2, 2)`:
+Here is an example using the `YCrCb` color space and HOG parameters of `orientations=9`, `pixels_per_cell=(8, 8)` and `cells_per_block=(2, 2)`:
 
 
-![alt text][image2]
+car:![alt text](.\output_images\hog.jpg)
 
 ####2. Explain how you settled on your final choice of HOG parameters.
 
@@ -58,6 +49,7 @@ orient = 9  # HOG orientations
 pix_per_cell = 8 # HOG pixels per cell
 cell_per_block = 2 # HOG cells per block
 hog_channel = 'ALL' # Can be 0, 1, 2, or "ALL"
+
 
 beacuse the training data is 64*64, so the pix_per_cell is setting to 8 for 8 cell each directions
 hog_channel is set to All that make all channel of RBG to used in feature extracting, that can make the prediction more accuracy
@@ -71,23 +63,26 @@ I trained a linear SVM using sklearn svm and prepared the data using StandardSca
 
 then spliting up data into randomized training and test sets with rate value of 0.2
 
-at last the test accuracy of SVC is 0.9778
+the SVC result:
+Using: 9 orientations 8 pixels per cell and 2 cells per block
+Feature vector length: 6108
+16.53 Seconds to train SVC...
+Test Accuracy of SVC =  0.987
 
 ###Sliding Window Search
 
 ####1. Describe how (and identify where in your code) you implemented a sliding window search.  How did you decide what scales to search and how much to overlap windows?
 
-I decided to search random window positions at random scales all over the image and came up with this (ok just kidding I didn't actually ;):
+I decided to search random window positions at 1.5 and 2.5 scales all over the image and came up with this :
 
-![alt text][image3]
+some features image examples: ![alt text](.\output_images\extractfeatures.png)![alt text](.\output_images\spetailbinning.png)
 
 ####2. Show some examples of test images to demonstrate how your pipeline is working.  What did you do to optimize the performance of your classifier?
 
-Ultimately I searched on two scales using YCrCb 3-channel HOG features plus spatially binned color and histograms of color in the feature vector, which provided a nice result.  Here are some example images:
+Ultimately I searched on two scales using YCrCb 3-channel HOG features plus spatially binned color and histograms of color in the feature vector, which provided a nice result.  Here are one of the example images:
 
-![alt text][image4]
+![alt text](.\output_images\slidewindow.png)
 
-the scales is 1.5 and 2.
 ---
 
 ### Video Implementation
@@ -102,15 +97,13 @@ I recorded the positions of positive detections in each frame of the video.  Fro
 
 Here's an example result showing the heatmap from a series of frames of video, the result of `scipy.ndimage.measurements.label()` and the bounding boxes then overlaid on the last frame of video:
 
-### Here are six frames and their corresponding heatmaps:
+### Here are some frames and their corresponding heatmaps:
 
-![alt text][image5]
+![alt text](.\output_images\histogram.png)
+![alt text](.\output_images\findcar.png)
 
-### Here is the output of `scipy.ndimage.measurements.label()` on the integrated heatmap from all six frames:
-![alt text][image6]
-
-### Here the resulting bounding boxes are drawn onto the last frame in the series:
-![alt text][image7]
+### Here is the output of `scipy.ndimage.measurements.label()` on the integrated heatmap and the resulting bounding boxes are drawn onto the last frame in the series:
+![alt text](.\output_images\carpositions.png)
 
 
 
@@ -126,18 +119,10 @@ Here I'll talk about the approach I took, what techniques I used, what worked an
 
 2, applying threshold to the headmap, beacuse of the multi sliding window method used, so the heat map is very clearly
 
-some internal image shown blow:
-
-![alt text](.\output_images\spetailbinning.png)
-![alt text](.\output_images\extractfeatures.png)
-![alt text](.\output_images\findcar.png)
-![alt text](.\output_images\histogram.png)
-![alt text](.\output_images\slidewindow.png)
-![alt text](.\output_images\carpositions.png)
 
 Some times the shadow of road and tree may be predict as a car, this is the fail position of the pipline
-1, using two sacles for car predict
+1, using two or more sacles for car predict
 
 2, adding more threshold for heat and label
 
-those ways can provide more rate of predicting success  
+those ways can provide more successful rate of predicting   
